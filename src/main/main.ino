@@ -5,77 +5,75 @@
 #define leftBackward 3
 #define rightForward 4
 #define rightBackward 5
-#define leftIrSensor 14 //14 = analog 0 port, 15 = analog 1 port etc.
-#define midLeftIrSensor 15
-#define midRightIrSensor 16
-#define rightIrSensor 17 
+#define leftIrSensor  A0
+#define midLeftIrSensor A1
+#define midRightIrSensor A2
+#define rightIrSensor A3
+#define echoPin 8
+#define trigPin 9
 
-Motor motor(leftForward, leftBackward, rightForward, rightBackward);
+//Motor motor(leftForward, leftBackward, rightForward, rightBackward);
 
 void setup() {
   Serial.begin(9600);
 
-  /* Configure pins */
-  pinMode(14, INPUT);
-  pinMode(15, INPUT);
-  pinMode(16, INPUT);
-  pinMode(17, INPUT);
 }
 
 void loop() {
   
-  ultrasonic();
-  motor.driveForward();
+  int stopCar = objectDetected ();
+  
+ motor.driveForward();
   delay(2000);
   motor.stop();
   delay(2000);
   
   //must be interfaced later    
-  int irsensorlinks = analogRead(2);
-  int irsensorrechts = analogRead(3);
-  int irsensormidden1 = analogRead(4);
-  int irsensormidden2 = analogRead(5);
+  int leftIrSensor = digitalRead(A0);
+  int rightIrSensor = digitalRead(A1);
+  int midRightIrSensor = digitalRead(A2);
+  int midLeftIrSensor = digitalRead(A3);
 
-  Serial.println(irsensorlinks);
-  Serial.println(irsensorrechts);
-  Serial.println(irsensormidden1);
-  Serial.println(irsensormidden2);
+  Serial.println(leftIrSensor);
+  Serial.println(rightIrSensor);
+  Serial.println(midRightIrSensor);
+  Serial.println(midLeftIrSensor);
 
-  if (irsensorlinks == 0 && irsensorrechts == 1) {
-    // bocht naar links
-    // motor rechts sneller laten draaien
+  if (leftIrSensor == 0 && rightIrSensor == 1 && midRightIrSensor == 1 && midLeftIrSensor == 1) {
+    // 90 graden bocht naar links
   }
-  if (irsensorlinks == 1 && irsensorrechts == 0){
-    // bocht naar rechts
-    // motor links sneller laten draaien
+  if (leftIrSensor == 1 && rightIrSensor == 0 && midRightIrSensor == 1 && midLeftIrSensor == 1){
+    // 90 graden bocht naar rechts
   }
-  if (irsensormidden1 == 1 && irsensormidden2 == 1){
-    //doorrijden geen bocht
+  if (midRightIrSensor == 1 && midLeftIrSensor == 1){
+    // doorrijden geen bocht
   }
-  if (irsensorlinks == 1 && irsensorrechts == 1 && irsensormidden1 == 1 && irsensormidden2 == 1){
-   
-
+  if (leftIrSensor == 1 && rightIrSensor == 0 && midRightIrSensor == 1 && midLeftIrSensor == 1){
+   // flauwe bocht naar links
+  }
+  if (leftIrSensor == 0 && rightIrSensor == 1 && midRightIrSensor == 1 && midLeftIrSensor == 1){
+    // flauwe bocht naar rechts
+  }
 }
+int objectDetected (){ // met int geef je return value aan
 
-void ultraSonic () {
+  digitalWrite(echoPin, LOW);
+  digitalWrite(trigPin, HIGH);
+
+  delayMicroseconds(10);
+
+  digitalWrite(trigPin, LOW);
+
+  int valueSonar = pulseIn(echoPin,HIGH);
+
+  Serial.println(valueSonar); 
+//  delay(200);
+
+   if (valueSonar < 1200){  // 12200 = 10 cm in range
+//     Serial.println("object!");
+      return 1;
+    }
+//    Serial.println("no object!");
+    return 0;
+   }
   
-digitalWrite(echoPin, LOW);
-digitalWrite(trigPin, HIGH);
-delayMicroseconds(10);
-digitalWrite(trigPin, LOW);
-
-int waardeSonar = pulseIn(echoPin,HIGH);
-
-Serial.println(waardeSonar); 
-delay(200);
-
-if (waardeSonar < 1000){
-  motor.stop();
-  Serial.println("STOPPP!!!");
-  
-}else{
- motor.driveForward();
-  Serial.println("Weer verder rijden");
-  }
-
-}
