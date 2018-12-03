@@ -28,10 +28,18 @@ Motor motor(leftMotorForwardPin, leftMotorReversePin, rightMotorForwardPin, righ
 void setup() {
   Serial.begin(9600);
 
+  pinMode(leftMotorForwardPin, OUTPUT);
+  pinMode(leftMotorReversePin, OUTPUT);
+  pinMode(rightMotorForwardPin, OUTPUT);
+  pinMode(rightMotorReversePin, OUTPUT);
+
   pinMode(leftIrSensorPin, INPUT_PULLUP);
   pinMode(midLeftIrSensorPin, INPUT_PULLUP);
   pinMode(midRightIrSensorPin, INPUT_PULLUP);
   pinMode(rightIrSensorPin, INPUT_PULLUP);
+
+  pinMode(sonarTriggerPin, OUTPUT);
+  pinMode(sonarEchoPin, INPUT);
 
 }
 
