@@ -14,20 +14,25 @@
 #define sonarEchoPin 10
 #define sonarTriggerPin 11
 
-int midLeftIrValue = 1; // predefining variables
-int rightIrValue = 1;
-int midRightIrValue = 1;
-int leftIrValue = 1;
+/*
+  Using INPUT_PULLUP the output of the ir modules defaults to 0 if no line is
+  detected.
+*/
+int midLeftIrValue = 0;
+int rightIrValue = 0;
+int midRightIrValue = 0;
+int leftIrValue = 0;
 
 Motor motor(leftMotorForwardPin, leftMotorReversePin, rightMotorForwardPin, rightMotorReversePin);
 
 void setup() {
   Serial.begin(9600);
 
-  pinMode(leftIrSensorPin, INPUT);
-  pinMode(midLeftIrSensorPin, INPUT);
-  pinMode(midRightIrSensorPin, INPUT);
-  pinMode(rightIrSensorPin, INPUT);
+  pinMode(leftIrSensorPin, INPUT_PULLUP);
+  pinMode(midLeftIrSensorPin, INPUT_PULLUP);
+  pinMode(midRightIrSensorPin, INPUT_PULLUP);
+  pinMode(rightIrSensorPin, INPUT_PULLUP);
+
 }
 
 void loop() {
@@ -44,28 +49,32 @@ void loop() {
   midRightIrValue = digitalRead(midRightIrSensorPin);
   rightIrValue = digitalRead(rightIrSensorPin);
 
-  Serial.println(leftIrSensorPin);
-  Serial.println(midLeftIrSensorPin);
-  Serial.println(midRightIrSensorPin);
-  Serial.println(rightIrSensorPin);
+  Serial.println(leftIrValue);
+  Serial.println(midLeftIrValue);
+  Serial.println(midRightIrValue);
+  Serial.println(rightIrValue);
 
-  if (leftIrSensor == 0 && rightIrSensor == 1 && midRightIrSensor == 1 && midLeftIrSensor == 1) {
-    // 90 graden bocht naar links
-  }
-  if (leftIrSensor == 1 && rightIrSensor == 0 && midRightIrSensor == 1 && midLeftIrSensor == 1){
-    // 90 graden bocht naar rechts
-  }
-  if (midRightIrSensor == 1 && midLeftIrSensor == 1){
-    // doorrijden geen bocht
-  }
-  if (leftIrSensor == 1 && rightIrSensor == 0 && midRightIrSensor == 1 && midLeftIrSensor == 1){
-   // flauwe bocht naar links
-  }
-  if (leftIrSensor == 0 && rightIrSensor == 1 && midRightIrSensor == 1 && midLeftIrSensor == 1){
-    // flauwe bocht naar rechts
-  }
+  // if (leftIrSensor == 0 && rightIrSensor == 1 && midRightIrSensor == 1 && midLeftIrSensor == 1) {
+  //   // 90 graden bocht naar links
+  // }
+  // if (leftIrSensor == 1 && rightIrSensor == 0 && midRightIrSensor == 1 && midLeftIrSensor == 1){
+  //   // 90 graden bocht naar rechts
+  // }
+  // if (midRightIrSensor == 1 && midLeftIrSensor == 1){
+  //   // doorrijden geen bocht
+  // }
+  // if (leftIrSensor == 1 && rightIrSensor == 0 && midRightIrSensor == 1 && midLeftIrSensor == 1){
+  //  // flauwe bocht naar links
+  // }
+  // if (leftIrSensor == 0 && rightIrSensor == 1 && midRightIrSensor == 1 && midLeftIrSensor == 1){
+  //   // flauwe bocht naar rechts
+  // }
 }
 
+/*
+  Measures the distance between an object and the robot using PulseIn() to determine
+  the amount of time it took for the sound to bounce back from the object.
+*/
 int isObjectDetected (){ // met int geef je return value aan
 
   digitalWrite(sonarEchoPin, LOW);
