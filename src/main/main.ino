@@ -1,5 +1,5 @@
 #include <Arduino.h>
-//#include <Motor.h>
+#include <Motor.h>
 
 #define leftForward 2
 #define leftBackward 3
@@ -18,22 +18,29 @@ int midLeftIrValue = 1; // predefining variables
 int rightIrValue = 1;
 int midRightIrValue = 1;
 int leftIrValue = 1;
+
 //Motor motor(leftForward, leftBackward, rightForward, rightBackward);
 
 void setup() {
   
   Serial.begin(9600);
+  
   pinMode (6, INPUT);
   pinMode (7, INPUT);
   pinMode (8, INPUT);
   pinMode (9, INPUT);
-
+  
 }
 
 void loop() {
   
   int stopCar = objectDetected ();
   
+  if (stopCar == 1)
+  {
+    motor.stop();
+    return;
+  }
 // motor.driveForward();
 //  delay(2000);
 //  motor.stop();
@@ -45,10 +52,10 @@ void loop() {
   midRightIrValue = digitalRead(midRightIrSensor);
   midLeftIrValue = digitalRead(midLeftIrSensor);
 
-  Serial.println(leftIrValue);
-  Serial.println(rightIrValue);
-  Serial.println(midRightIrValue);
-  Serial.println(midLeftIrValue);
+//  Serial.println(leftIrValue);
+//  Serial.println(rightIrValue);
+//  Serial.println(midRightIrValue);
+//  Serial.println(midLeftIrValue);
 
   if (leftIrSensor == 0 && rightIrSensor == 1 && midRightIrSensor == 1 && midLeftIrSensor == 1) {
     // 90 graden bocht naar links
@@ -76,11 +83,13 @@ int objectDetected (){ // met int geef je return value aan
   digitalWrite(trigPin, LOW);
 
   int valueSonar = pulseIn(echoPin,HIGH);
-
+  
+  valueSonar = valueSonar /2 /29 ;  // :2 because of traveltime back and forth ... :29 because speed of sound =343 m/s = 0.0343 cm/ uS = 1/29cm/uS
+  
   Serial.println(valueSonar); 
-//  delay(200);
+   
 
-   if (valueSonar < 1200){  // 12200 = 10 cm in range
+   if (valueSonar < 20){  // 20 = 20 cm in range
 //     Serial.println("object!");
       return 1;
     }
