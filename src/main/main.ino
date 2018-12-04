@@ -15,8 +15,8 @@
 #define sonarTriggerPin 11
 
 /*
-  The ir values are by default 0 since the pinModes of these sensors are configured
-  with INPUT_PULLUP. Value becomes 1 if receiver receives light.
+  Using INPUT_PULLUP the output of the ir modules defaults to 0 if no line is
+  detected.
 */
 int midLeftIrValue = 0;
 int rightIrValue = 0;
@@ -28,24 +28,20 @@ Motor motor(leftMotorForwardPin, leftMotorReversePin, rightMotorForwardPin, righ
 void setup() {
   Serial.begin(9600);
 
-  pinMode(leftMotorForwardPin, OUTPUT);
-  pinMode(leftMotorReversePin, OUTPUT);
-  pinMode(rightMotorForwardPin, OUTPUT);
-  pinMode(rightMotorReversePin, OUTPUT);
-
   pinMode(leftIrSensorPin, INPUT_PULLUP);
   pinMode(midLeftIrSensorPin, INPUT_PULLUP);
   pinMode(midRightIrSensorPin, INPUT_PULLUP);
   pinMode(rightIrSensorPin, INPUT_PULLUP);
-
-  pinMode(sonarTriggerPin, OUTPUT);
-  pinMode(sonarEchoPin, INPUT);
 
 }
 
 void loop() {
   int stopCar = isObjectDetected();
 
+  if(stopCar == 1){
+    motor.stop();
+    return;
+  }
 // motor.driveForward();
 //  delay(2000);
 //  motor.stop();
@@ -80,8 +76,8 @@ void loop() {
 }
 
 /*
-  Measures the distance between an object and the robot using PulseIn(). Returns
-  1 if an object is within a range of 20cm.
+  Measures the distance between an object and the robot using PulseIn() to determine
+  the amount of time it took for the sound to bounce back from the object.
 */
 int isObjectDetected (){ // met int geef je return value aan
 
@@ -93,15 +89,17 @@ int isObjectDetected (){ // met int geef je return value aan
   digitalWrite(sonarTriggerPin, LOW);
 
   int valueSonar = pulseIn(echoPin,HIGH);
-
+  
   valueSonar = valueSonar /2 /29 ;  // :2 because of traveltime back and forth ... :29 because speed of sound =343 m/s = 0.0343 cm/ uS = 1/29cm/uS
+  
+  Serial.println(valueSonar); 
+   
 
-  Serial.println(valueSonar);
-
-  if(valueSonar < 20){  // 20 = 20 cm in range
-    //Serial.println("object!");
-    return 1;
-  }
-  //Serial.println("no object!");
-  return 0;
-}
+   if (valueSonar < 20){  // 20 = 20 cm in range
+//     Serial.println("object!");
+      return 1;
+    }
+//    Serial.println("no object!");
+    return 0;
+   }
+  
