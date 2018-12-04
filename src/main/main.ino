@@ -45,7 +45,10 @@ void setup() {
 
 void loop() {
   int stopCar = isObjectDetected();
-
+  if(stopCar == 1){
+    motor.stop();
+    return;
+  }
 // motor.driveForward();
 //  delay(2000);
 //  motor.stop();
