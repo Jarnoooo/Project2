@@ -1,15 +1,15 @@
 #include <Arduino.h>
 #include <Motor.h>
 
-#define leftMotorForwardPin 2
-#define leftMotorReversePin 3
-#define rightMotorForwardPin 4
-#define rightMotorReversePin 5
+#define leftMotorForwardPin 3
+#define leftMotorReversePin 5
+#define rightMotorForwardPin 6
+#define rightMotorReversePin 9
 
-#define leftIrSensorPin 6
-#define midLeftIrSensorPin 7
-#define midRightIrSensorPin 8
-#define rightIrSensorPin 9
+#define leftIrSensorPin 2
+#define midLeftIrSensorPin 4
+#define midRightIrSensorPin 7
+#define rightIrSensorPin 8
 
 #define sonarTriggerPin 10
 #define sonarEchoPin 11
