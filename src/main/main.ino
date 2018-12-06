@@ -11,8 +11,8 @@
 #define midRightIrSensorPin 8
 #define rightIrSensorPin 9
 
-#define sonarEchoPin 10
-#define sonarTriggerPin 11
+#define sonarTriggerPin 10
+#define sonarEchoPin 11
 
 /*
   Using INPUT_PULLUP the output of the ir modules defaults to 0 if no line is
@@ -22,6 +22,7 @@ int midLeftIrValue = 0;
 int rightIrValue = 0;
 int midRightIrValue = 0;
 int leftIrValue = 0;
+long cm;
 
 Motor motor(leftMotorForwardPin, leftMotorReversePin, rightMotorForwardPin, rightMotorReversePin);
 
@@ -32,7 +33,9 @@ void setup() {
   pinMode(midLeftIrSensorPin, INPUT_PULLUP);
   pinMode(midRightIrSensorPin, INPUT_PULLUP);
   pinMode(rightIrSensorPin, INPUT_PULLUP);
-
+  
+  pinMode(sonarTriggerPin, OUTPUT);
+  pinMode(sonarEchoPin, INPUT);
 }
 
 void loop() {
@@ -79,27 +82,34 @@ void loop() {
   Measures the distance between an object and the robot using PulseIn() to determine
   the amount of time it took for the sound to bounce back from the object.
 */
-int isObjectDetected (){ // met int geef je return value aan
-
-  digitalWrite(sonarEchoPin, LOW);
-  digitalWrite(sonarTriggerPin, HIGH);
-
-  delayMicroseconds(10);
-
+  int isObjectDetected (){ // met int geef je return value aan
+  
+  // The sensor is triggered by a HIGH pulse of 10 or more microseconds.
+  // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
   digitalWrite(sonarTriggerPin, LOW);
-
-  int valueSonar = pulseIn(echoPin,HIGH);
+  delayMicroseconds(5);
+  digitalWrite(sonarTriggerPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(sonarTriggerPin, LOW);
+ 
+  // Read the signal from the sensor: a HIGH pulse whose
+  // duration is the time (in microseconds) from the sending
+  // of the ping to the reception of its echo off of an object.
+  pinMode(sonarEchoPin, INPUT);
+  long duration = pulseIn(sonarEchoPin, HIGH);
+  // Convert the time into a distance
+  cm = (duration/2) / 29.1;     // Divide by 29.1 or multiply by 0.0343
+  Serial.println(cm);
+  Serial.println("cm");
   
-  valueSonar = valueSonar /2 /29 ;  // :2 because of traveltime back and forth ... :29 because speed of sound =343 m/s = 0.0343 cm/ uS = 1/29cm/uS
+  delay(100);
+     
   
-  Serial.println(valueSonar); 
-   
-
-   if (valueSonar < 20){  // 20 = 20 cm in range
-//     Serial.println("object!");
-      return 1;
-    }
-//    Serial.println("no object!");
-    return 0;
-   }
+     if (cm < 20){  // 20 = 20 cm in range
+       Serial.println("object!");
+        return 1;
+      }
+      Serial.println("no object!");
+      return 0;
+     }
   
