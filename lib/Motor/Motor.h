@@ -10,6 +10,7 @@ class Motor {
     int _rightForwardPin;
     int _rightBackwardPin;
   public:
+    int speed;
     Motor(int, int, int, int);
     void driveForward();
     void driveBackward();

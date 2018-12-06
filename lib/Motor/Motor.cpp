@@ -10,20 +10,21 @@ Motor::Motor(int leftForwardPin, int leftbackwardPin, int rightForwardPin, int r
   pinMode(leftbackwardPin, OUTPUT);
   pinMode(rightForwardPin, OUTPUT);
   pinMode(rightBackwardPin, OUTPUT);
+
 }
 
 void Motor::driveForward() {
-  digitalWrite(_leftForwardPin, HIGH);
+  analogWrite(_leftForwardPin, speed);
   digitalWrite(_leftbackwardPin, LOW);
-  digitalWrite(_rightForwardPin, HIGH);
+  analogWrite(_rightForwardPin, speed);
   digitalWrite(_rightBackwardPin, LOW);
 }
 
 void Motor::driveBackward() {
   digitalWrite(_leftForwardPin, LOW);
-  digitalWrite(_leftbackwardPin, HIGH);
+  analogwrite(_leftbackwardPin, speed);
   digitalWrite(_rightForwardPin, LOW);
-  digitalWrite(_rightBackwardPin, HIGH);
+  analogwrite(_rightBackwardPin, speed);
 }
 void Motor::stop() {
   digitalWrite(_leftForwardPin, LOW);
@@ -32,7 +33,7 @@ void Motor::stop() {
   digitalWrite(_rightBackwardPin, LOW);
 }
 void Motor::turnLeft() {
-  digitalWrite(_leftForwardPin, HIGH);
+  analogwrite(_leftForwardPin, speed);
   digitalWrite(_leftbackwardPin, LOW);
   digitalWrite(_rightForwardPin, LOW);
   digitalWrite(_rightBackwardPin, LOW);
@@ -41,6 +42,6 @@ void Motor::turnLeft() {
 void Motor::turnRight() {
   digitalWrite(_leftForwardPin, LOW);
   digitalWrite(_leftbackwardPin, LOW);
-  digitalWrite(_rightForwardPin, HIGH);
+  analogwrite(_rightForwardPin, speed);
   digitalWrite(_rightBackwardPin, LOW);
 }
