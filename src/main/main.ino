@@ -24,23 +24,26 @@ int midRightIrValue = 0;
 int leftIrValue = 0;
 long cm;
 
+int isObjectDetected();
+
 Motor motor(leftMotorForwardPin, leftMotorReversePin, rightMotorForwardPin, rightMotorReversePin);
 
 void setup() {
   Serial.begin(9600);
 
+  motor.speed = 150;
+
   pinMode(leftIrSensorPin, INPUT_PULLUP);
   pinMode(midLeftIrSensorPin, INPUT_PULLUP);
   pinMode(midRightIrSensorPin, INPUT_PULLUP);
   pinMode(rightIrSensorPin, INPUT_PULLUP);
-  
+
   pinMode(sonarTriggerPin, OUTPUT);
   pinMode(sonarEchoPin, INPUT);
 }
 
 void loop() {
-  int stopCar = isObjectDetected();
-  if(stopCar == 1){
+  if(isObjectDetected()){
     motor.stop();
     return;
   }
@@ -81,8 +84,7 @@ void loop() {
   Measures the distance between an object and the robot using PulseIn() to determine
   the amount of time it took for the sound to bounce back from the object.
 */
-  int isObjectDetected (){ // met int geef je return value aan
-  
+int isObjectDetected (){ // met int geef je return value aan
   // The sensor is triggered by a HIGH pulse of 10 or more microseconds.
   // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
   digitalWrite(sonarTriggerPin, LOW);
@@ -90,7 +92,7 @@ void loop() {
   digitalWrite(sonarTriggerPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(sonarTriggerPin, LOW);
- 
+
   // Read the signal from the sensor: a HIGH pulse whose
   // duration is the time (in microseconds) from the sending
   // of the ping to the reception of its echo off of an object.
@@ -100,15 +102,12 @@ void loop() {
   cm = (duration/2) / 29.1;     // Divide by 29.1 or multiply by 0.0343
   Serial.println(cm);
   Serial.println("cm");
-  
+
   delay(100);
-     
-  
-     if (cm < 20){  // 20 = 20 cm in range
-       Serial.println("object!");
-        return 1;
-      }
-      Serial.println("no object!");
-      return 0;
-     }
-  
+
+  if (cm < 20){  // 20 = 20 cm in range
+    return 1;
+  }
+
+  return 0;
+}
