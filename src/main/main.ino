@@ -40,7 +40,6 @@ void setup() {
 
 void loop() {
   int stopCar = isObjectDetected();
-
   if(stopCar == 1){
     motor.stop();
     return;
