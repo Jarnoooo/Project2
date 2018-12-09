@@ -14,10 +14,6 @@
 #define sonarTriggerPin 10
 #define sonarEchoPin 11
 
-/*
-  Using INPUT_PULLUP the output of the ir modules defaults to 0 if nsso line is
-  detected.
-*/
 int midLeftIrValue = 0;
 int rightIrValue = 0;
 int midRightIrValue = 0;
@@ -32,10 +28,10 @@ void setup() {
 ss
   motor.speed = 150;
 
-  pinMode(leftIrSensorPin, INPUT_PULLUP);
-  pinMode(midLeftIrSensorPin, INPUT_PULLUP);
-  pinMode(midRightIrSensorPin, INPUT_PULLUP);
-  pinMode(rightIrSensorPin, INPUT_PULLUP);
+  pinMode(leftIrSensorPin, INPUT);
+  pinMode(midLeftIrSensorPin, INPUT);
+  pinMode(midRightIrSensorPin, INPUT);
+  pinMode(rightIrSensorPin, INPUT);
 
   pinMode(sonarTriggerPin, OUTPUT);
   pinMode(sonarEchoPin, INPUT);
@@ -55,28 +51,45 @@ void loop() {
   leftIrValue = digitalRead(leftIrSensorPin);
   midLeftIrValue = digitalRead(midLeftIrSensorPin);
   midRightIrValue = digitalRead(midRightIrSensorPin);
-  rightIrValue = digitalRead(rightIrSensorPin);
+  rightIrValue = 0; //digitalRead(rightIrSensorPin);
 
-//  Serial.println(leftIrValue);
-//  Serial.println(rightIrValue);
-//  Serial.println(midRightIrValue);
-//  Serial.println(midLeftIrValue);
+  // Serial.print("leftIrValue: ");
+  // Serial.print(leftIrValue);
+  // Serial.println();
+  // Serial.print("midLeftIrValue: ");
+  // Serial.print(midLeftIrValue);
+  // Serial.println();
+  // Serial.print("midRightIrValue: ");
+  // Serial.print(midRightIrValue);
+  // Serial.println();
 
-  // if (leftIrSensor == 0 && rightIrSensor == 1 && midRightIrSensor == 1 && midLeftIrSensor == 1) {
-  //   // 90 graden bocht naar links
-  // }
-  // if (leftIrSensor == 1 && rightIrSensor == 0 && midRightIrSensor == 1 && midLeftIrSensor == 1){
-  //   // 90 graden bocht naar rechts
-  // }
-  // if (midRightIrSensor == 1 && midLeftIrSensor == 1){
-  //   // doorrijden geen bocht
-  // }
-  // if (leftIrSensor == 1 && rightIrSensor == 0 && midRightIrSensor == 1 && midLeftIrSensor == 1){
-  //  // flauwe bocht naar links
-  // }
-  // if (leftIrSensor == 0 && rightIrSensor == 1 && midRightIrSensor == 1 && midLeftIrSensor == 1){
-  //   // flauwe bocht naar rechts
-  // }
+  // 1 -> black line
+  // 0 -> white
+
+ if(leftIrValue && midLeftIrValue && midRightIrValue && rightIrValue) { //t-junction
+   Serial.println("t junction");
+
+   //move forward
+ }else if(leftIrValue && midLeftIrValue) { // turn left
+   Serial.println("turn left");
+
+ }else if(rightIrValue && midRightIrValue) { //turn right
+   Serial.println("turn right");
+
+ }else if(midRightIrValue == 0 && leftIrValue == 0 && rightIrValue == 0) { //right offset
+   Serial.println("right offset");
+
+   //right adjustion
+ }else if(midLeftIrValue == 0 && leftIrValue == 0 && rightIrValue == 0) { //left offset
+   Serial.println("left offset");
+   //left adjustion
+ }else if(leftIrValue == 0 && midLeftIrValue == 0 && midRightIrValue == 0 && rightIrValue ==0) { // no line is detected move forward.
+   Serial.println("no line detected");
+ }else if(midLeftIrValue && midRightIrValue) {
+   Serial.println("driving forward");
+   motor.speed = 255;
+   motor.driveForward();
+ }
 }
 
 /*
@@ -100,12 +113,10 @@ int isObjectDetected (){ // met int geef je return value aan
   
   pinMode(sonarEchoPin, INPUT);
   long duration = pulseIn(sonarEchoPin, HIGH);
-  
-  // Convert the time into a distance by deviding by 2 and devide bu 29.1... you could multiply by 0.0343 instead of deviding by 29.1
-
-  cm = (duration/2) / 29.1;    
-  Serial.println(cm);
-  Serial.println("cm");
+  // Convert the time into a distance
+  cm = (duration/2) / 29.1;     // Divide by 29.1 or multiply by 0.0343
+  // Serial.println(cm);
+  // Serial.println("cm");
 
   delay(100);
 
