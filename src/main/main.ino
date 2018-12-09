@@ -15,22 +15,21 @@
 #define sonarEchoPin 11
 
 /*
-  Using INPUT_PULLUP the output of the ir modules defaults to 0 if no line is
+  Using INPUT_PULLUP the output of the ir modules defaults to 0 if nsso line is
   detected.
 */
 int midLeftIrValue = 0;
 int rightIrValue = 0;
 int midRightIrValue = 0;
 int leftIrValue = 0;
-long cm;
-
 int isObjectDetected();
 
+long cm;
 Motor motor(leftMotorForwardPin, leftMotorReversePin, rightMotorForwardPin, rightMotorReversePin);
 
 void setup() {
   Serial.begin(9600);
-
+ss
   motor.speed = 150;
 
   pinMode(leftIrSensorPin, INPUT_PULLUP);
@@ -43,7 +42,7 @@ void setup() {
 }
 
 void loop() {
-  if(isObjectDetected()){
+  if(isObjectDetected()= 1){
     motor.stop();
     return;
   }
@@ -85,21 +84,26 @@ void loop() {
   the amount of time it took for the sound to bounce back from the object.
 */
 int isObjectDetected (){ // met int geef je return value aan
-  // The sensor is triggered by a HIGH pulse of 10 or more microseconds.
-  // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
+ 
+  // The sensor is triggered by a high pulse of 10 or more microseconds.
+  // Give a short low pulse beforehand to ensure a clean high pulse:
+  
   digitalWrite(sonarTriggerPin, LOW);
   delayMicroseconds(5);
   digitalWrite(sonarTriggerPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(sonarTriggerPin, LOW);
 
-  // Read the signal from the sensor: a HIGH pulse whose
+  // Read the signal from the sensor: a high pulse whose
   // duration is the time (in microseconds) from the sending
   // of the ping to the reception of its echo off of an object.
+  
   pinMode(sonarEchoPin, INPUT);
   long duration = pulseIn(sonarEchoPin, HIGH);
-  // Convert the time into a distance
-  cm = (duration/2) / 29.1;     // Divide by 29.1 or multiply by 0.0343
+  
+  // Convert the time into a distance by deviding by 2 and devide bu 29.1... you could multiply by 0.0343 instead of deviding by 29.1
+
+  cm = (duration/2) / 29.1;    
   Serial.println(cm);
   Serial.println("cm");
 
