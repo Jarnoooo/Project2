@@ -20,12 +20,16 @@ int midRightIrValue = 0;
 int leftIrValue = 0;
 int isObjectDetected();
 
+unsigned long lastLine = 0;
+unsigned long interval = 3000; 
+boolean turn = false;
+
 long cm;
 Motor motor(leftMotorForwardPin, leftMotorReversePin, rightMotorForwardPin, rightMotorReversePin);
 
 void setup() {
   Serial.begin(9600);
-ss
+
   motor.speed = 150;
 
   pinMode(leftIrSensorPin, INPUT);
@@ -38,7 +42,7 @@ ss
 }
 
 void loop() {
-  if(isObjectDetected()= 1){
+  if(isObjectDetected() == 1){
     motor.stop();
     return;
   }
@@ -51,7 +55,7 @@ void loop() {
   leftIrValue = digitalRead(leftIrSensorPin);
   midLeftIrValue = digitalRead(midLeftIrSensorPin);
   midRightIrValue = digitalRead(midRightIrSensorPin);
-  rightIrValue = 0; //digitalRead(rightIrSensorPin);
+  rightIrValue = digitalRead(rightIrSensorPin);
 
   // Serial.print("leftIrValue: ");
   // Serial.print(leftIrValue);
@@ -83,14 +87,18 @@ void loop() {
  }else if(midLeftIrValue == 0 && leftIrValue == 0 && rightIrValue == 0) { //left offset
    Serial.println("left offset");
    //left adjustion
+   
  }else if(leftIrValue == 0 && midLeftIrValue == 0 && midRightIrValue == 0 && rightIrValue ==0) { // no line is detected move forward.
    Serial.println("no line detected");
+   turn = true;
+   checkLine ();
+   
  }else if(midLeftIrValue && midRightIrValue) {
    Serial.println("driving forward");
    motor.speed = 255;
    motor.driveForward();
- }
-}
+   }
+  }
 
 /*
   Measures the distance between an object and the robot using PulseIn() to determine
@@ -118,11 +126,27 @@ int isObjectDetected (){ // met int geef je return value aan
   // Serial.println(cm);
   // Serial.println("cm");
 
-  delay(100);
+//  delay(100);
 
   if (cm < 20){  // 20 = 20 cm in range
     return 1;
   }
 
   return 0;
+}
+
+void checkLine (){
+
+ int currentMillis = millis ();
+  if(currentMillis - lastLine > interval){
+     
+    motor.turnRight();
+    turn = false;
+    lastLine += interval; // saves when the timer has stopped
+    
+    Serial.println("huts a niffauw");
+    
+    
+    
+  }
 }
