@@ -14,6 +14,7 @@
 #define sonarTriggerPin 10
 #define sonarEchoPin 11
 
+#define maxSpeed 255;
 
 int midLeftIrValue = 0;
 int rightIrValue = 0;
@@ -28,7 +29,7 @@ Motor motor(leftMotorForwardPin, leftMotorReversePin, rightMotorForwardPin, righ
 void setup() {
   Serial.begin(9600);
 
-  motor.speed = 150;
+  motor.speed = maxSpeed;
 
   pinMode(leftIrSensorPin, INPUT);
   pinMode(midLeftIrSensorPin, INPUT);
@@ -40,14 +41,10 @@ void setup() {
 }
 
 void loop() {
-  // if(isObjectDetected()){
-  //   motor.stop();
-  //   return;
-  // }
-// motor.driveForward();
-//  delay(2000);
-//  motor.stop();
-//  delay(2000);
+  if(isObjectDetected()){
+    motor.stop();
+    return;
+  }
 
   //must be interfaced later
   leftIrValue = digitalRead(leftIrSensorPin);
@@ -59,37 +56,36 @@ void loop() {
   // Serial.print(leftIrValue);
   // Serial.println();
   // Serial.print("midLeftIrValue: ");
-  // Serial.print(midLeftIrValue);
+  // Serial.println(midLeftIrValue);
   // Serial.println();
   // Serial.print("midRightIrValue: ");
-  // Serial.print(midRightIrValue);
+  // Serial.println(midRightIrValue);
   // Serial.println();
 
-  // 1 -> black line
   // 0 -> white
+  // 1 -> black
+  //
 
  if(leftIrValue && midLeftIrValue && midRightIrValue && rightIrValue) { //t-junction
    Serial.println("t junction");
-
-   //move forward
  }else if(leftIrValue && midLeftIrValue) { // turn left
+   motor.turnLeft();
+   motor.speed = 200;
    Serial.println("turn left");
-
  }else if(rightIrValue && midRightIrValue) { //turn right
+   motor.turnRight();
+   motor.speed = 200;
    Serial.println("turn right");
-
  }else if(midRightIrValue == 0 && leftIrValue == 0 && rightIrValue == 0) { //right offset
+   motor.turnLeft();
    Serial.println("right offset");
-
-   //right adjustion
  }else if(midLeftIrValue == 0 && leftIrValue == 0 && rightIrValue == 0) { //left offset
+   motor.turnRight();
    Serial.println("left offset");
-   //left adjustion
  }else if(leftIrValue == 0 && midLeftIrValue == 0 && midRightIrValue == 0 && rightIrValue ==0) { // no line is detected move forward.
    Serial.println("no line detected");
  }else if(midLeftIrValue && midRightIrValue) {
    Serial.println("driving forward");
-   motor.speed = 255;
    motor.driveForward();
  }
 }
