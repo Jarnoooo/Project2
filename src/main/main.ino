@@ -20,9 +20,10 @@ int midLeftIrValue = 0;
 int rightIrValue = 0;
 int midRightIrValue = 0;
 int leftIrValue = 0;
-long cm;
 
 int isObjectDetected();
+
+long cm;
 
 Motor motor(leftMotorForwardPin, leftMotorReversePin, rightMotorForwardPin, rightMotorReversePin);
 
@@ -95,17 +96,20 @@ void loop() {
   the amount of time it took for the sound to bounce back from the object.
 */
 int isObjectDetected (){ // met int geef je return value aan
-  // The sensor is triggered by a HIGH pulse of 10 or more microseconds.
-  // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
+
+  // The sensor is triggered by a high pulse of 10 or more microseconds.
+  // Give a short low pulse beforehand to ensure a clean high pulse:
+
   digitalWrite(sonarTriggerPin, LOW);
   delayMicroseconds(5);
   digitalWrite(sonarTriggerPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(sonarTriggerPin, LOW);
 
-  // Read the signal from the sensor: a HIGH pulse whose
+  // Read the signal from the sensor: a high pulse whose
   // duration is the time (in microseconds) from the sending
   // of the ping to the reception of its echo off of an object.
+
   pinMode(sonarEchoPin, INPUT);
   long duration = pulseIn(sonarEchoPin, HIGH);
   // Convert the time into a distance
