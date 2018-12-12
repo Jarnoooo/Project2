@@ -67,28 +67,28 @@ void loop() {
   // 1 -> black
   //
 
- if(leftIrValue && midLeftIrValue && midRightIrValue && rightIrValue) { //t-junction
-   Serial.println("t junction");
- }else if(leftIrValue && midLeftIrValue) { // turn left
-   motor.turnLeft();
-   motor.speed = 200;
-   Serial.println("turn left");
- }else if(rightIrValue && midRightIrValue) { //turn right
-   motor.turnRight();
-   motor.speed = 200;
-   Serial.println("turn right");
- }else if(midRightIrValue == 0 && leftIrValue == 0 && rightIrValue == 0) { //right offset
-   motor.turnLeft();
-   Serial.println("right offset");
- }else if(midLeftIrValue == 0 && leftIrValue == 0 && rightIrValue == 0) { //left offset
-   motor.turnRight();
-   Serial.println("left offset");
- }else if(leftIrValue == 0 && midLeftIrValue == 0 && midRightIrValue == 0 && rightIrValue ==0) { // no line is detected move forward.
-   Serial.println("no line detected");
- }else if(midLeftIrValue && midRightIrValue) {
-   Serial.println("driving forward");
-   motor.driveForward();
- }
+  if(leftIrValue && midLeftIrValue && midRightIrValue && rightIrValue) { //t-junction
+    Serial.println("t junction");
+  }else if(leftIrValue && midLeftIrValue) { // turn left
+    motor.turnLeft();
+    motor.speed = 200;
+    Serial.println("turn left");
+  }else if(rightIrValue && midRightIrValue) { //turn right
+    motor.turnRight();
+    motor.speed = 200;
+    Serial.println("turn right");
+  }else if(midRightIrValue == 0 && leftIrValue == 0 && rightIrValue == 0) { //right offset
+    motor.turnLeft();
+    Serial.println("right offset");
+  }else if(midLeftIrValue == 0 && leftIrValue == 0 && rightIrValue == 0) { //left offset
+    motor.turnRight();
+    Serial.println("left offset");
+  }else if(leftIrValue == 0 && midLeftIrValue == 0 && midRightIrValue == 0 && rightIrValue ==0) { // no line is detected move forward.
+    Serial.println("no line detected");
+  }else if(midLeftIrValue && midRightIrValue) {
+    Serial.println("driving forward");
+    motor.driveForward();
+  }
 }
 
 /*
