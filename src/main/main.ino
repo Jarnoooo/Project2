@@ -14,10 +14,13 @@
 #define sonarTriggerPin 10
 #define sonarEchoPin 11
 
+#define maxSpeed 255;
+
 int midLeftIrValue = 0;
 int rightIrValue = 0;
 int midRightIrValue = 0;
 int leftIrValue = 0;
+
 int isObjectDetected();
 
 unsigned long lastLine = 0;
@@ -25,12 +28,13 @@ unsigned long interval = 3000;
 boolean turn = false;
 
 long cm;
+
 Motor motor(leftMotorForwardPin, leftMotorReversePin, rightMotorForwardPin, rightMotorReversePin);
 
 void setup() {
   Serial.begin(9600);
 
-  motor.speed = 150;
+  motor.speed = maxSpeed;
 
   pinMode(leftIrSensorPin, INPUT);
   pinMode(midLeftIrSensorPin, INPUT);
@@ -42,14 +46,10 @@ void setup() {
 }
 
 void loop() {
-  if(isObjectDetected() == 1){
+  if(isObjectDetected()){
     motor.stop();
     return;
   }
-// motor.driveForward();
-//  delay(2000);
-//  motor.stop();
-//  delay(2000);
 
   //must be interfaced later
   leftIrValue = digitalRead(leftIrSensorPin);
@@ -61,54 +61,49 @@ void loop() {
   // Serial.print(leftIrValue);
   // Serial.println();
   // Serial.print("midLeftIrValue: ");
-  // Serial.print(midLeftIrValue);
+  // Serial.println(midLeftIrValue);
   // Serial.println();
   // Serial.print("midRightIrValue: ");
-  // Serial.print(midRightIrValue);
+  // Serial.println(midRightIrValue);
   // Serial.println();
 
-  // 1 -> black line
   // 0 -> white
+  // 1 -> black
+  //
 
- if(leftIrValue && midLeftIrValue && midRightIrValue && rightIrValue) { //t-junction
-   Serial.println("t junction");
-
-   //move forward
- }else if(leftIrValue && midLeftIrValue) { // turn left
-   Serial.println("turn left");
-
- }else if(rightIrValue && midRightIrValue) { //turn right
-   Serial.println("turn right");
-
- }else if(midRightIrValue == 0 && leftIrValue == 0 && rightIrValue == 0) { //right offset
-   Serial.println("right offset");
-
-   //right adjustion
- }else if(midLeftIrValue == 0 && leftIrValue == 0 && rightIrValue == 0) { //left offset
-   Serial.println("left offset");
-   //left adjustion
-   
- }else if(leftIrValue == 0 && midLeftIrValue == 0 && midRightIrValue == 0 && rightIrValue ==0) { // no line is detected move forward.
-   Serial.println("no line detected");
-   turn = true;
-   checkLine ();
-   
- }else if(midLeftIrValue && midRightIrValue) {
-   Serial.println("driving forward");
-   motor.speed = 255;
-   motor.driveForward();
-   }
+  if(leftIrValue && midLeftIrValue && midRightIrValue && rightIrValue) { //t-junction
+    Serial.println("t junction");
+  }else if(leftIrValue && midLeftIrValue) { // turn left
+    motor.turnLeft();
+    motor.speed = 200;
+    Serial.println("turn left");
+  }else if(rightIrValue && midRightIrValue) { //turn right
+    motor.turnRight();
+    motor.speed = 200;
+    Serial.println("turn right");
+  }else if(midRightIrValue == 0 && leftIrValue == 0 && rightIrValue == 0) { //right offset
+    motor.turnLeft();
+    Serial.println("right offset");
+  }else if(midLeftIrValue == 0 && leftIrValue == 0 && rightIrValue == 0) { //left offset
+    motor.turnRight();
+    Serial.println("left offset");
+  }else if(leftIrValue == 0 && midLeftIrValue == 0 && midRightIrValue == 0 && rightIrValue ==0) { // no line is detected move forward.
+    Serial.println("no line detected");
+  }else if(midLeftIrValue && midRightIrValue) {
+    Serial.println("driving forward");
+    motor.driveForward();
   }
+}
 
 /*
   Measures the distance between an object and the robot using PulseIn() to determine
   the amount of time it took for the sound to bounce back from the object.
 */
 int isObjectDetected (){ // met int geef je return value aan
- 
+
   // The sensor is triggered by a high pulse of 10 or more microseconds.
   // Give a short low pulse beforehand to ensure a clean high pulse:
-  
+
   digitalWrite(sonarTriggerPin, LOW);
   delayMicroseconds(5);
   digitalWrite(sonarTriggerPin, HIGH);
@@ -118,7 +113,7 @@ int isObjectDetected (){ // met int geef je return value aan
   // Read the signal from the sensor: a high pulse whose
   // duration is the time (in microseconds) from the sending
   // of the ping to the reception of its echo off of an object.
-  
+
   pinMode(sonarEchoPin, INPUT);
   long duration = pulseIn(sonarEchoPin, HIGH);
   // Convert the time into a distance
