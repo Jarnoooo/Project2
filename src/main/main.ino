@@ -89,6 +89,11 @@ void loop() {
     Serial.println("left offset");
   }else if(leftIrValue == 0 && midLeftIrValue == 0 && midRightIrValue == 0 && rightIrValue ==0) { // no line is detected move forward.
     Serial.println("no line detected");
+    turn = true;
+    if(turn == true);
+     int currentMillis = millis ();
+     checkLine(currentMillis);
+     
   }else if(midLeftIrValue && midRightIrValue) {
     Serial.println("driving forward");
     motor.driveForward();
@@ -130,18 +135,19 @@ int isObjectDetected (){ // met int geef je return value aan
   return 0;
 }
 
-void checkLine (){
+bool checkLine (int currentTime){
 
- int currentMillis = millis ();
-  if(currentMillis - lastLine > interval){
+  if(currentTime - lastLine > interval){
      
     motor.turnRight();
     turn = false;
     lastLine += interval; // saves when the timer has stopped
-    
+    currentTime = 0;
     Serial.println("huts a niffauw");
+    return true;
     
     
-    
+  }else{
+    return false;
   }
 }
