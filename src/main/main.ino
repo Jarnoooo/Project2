@@ -51,7 +51,7 @@ void loop() {
   leftIrValue = digitalRead(leftIrSensorPin);
   midLeftIrValue = digitalRead(midLeftIrSensorPin);
   midRightIrValue = digitalRead(midRightIrSensorPin);
-  rightIrValue = 0; //digitalRead(rightIrSensorPin);
+  rightIrValue = digitalRead(rightIrSensorPin);
 
   // Serial.print("leftIrValue: ");
   // Serial.print(leftIrValue);
@@ -65,7 +65,6 @@ void loop() {
 
   // 0 -> white
   // 1 -> black
-  //
 
   if(leftIrValue && midLeftIrValue && midRightIrValue && rightIrValue) { //t-junction
     Serial.println("t junction");
@@ -78,15 +77,18 @@ void loop() {
     motor.speed = 200;
     Serial.println("turn right");
   }else if(midRightIrValue == 0 && leftIrValue == 0 && rightIrValue == 0) { //right offset
+    motor.speed = 180;
     motor.turnLeft();
     Serial.println("right offset");
   }else if(midLeftIrValue == 0 && leftIrValue == 0 && rightIrValue == 0) { //left offset
+    motor.speed = 180;
     motor.turnRight();
     Serial.println("left offset");
   }else if(leftIrValue == 0 && midLeftIrValue == 0 && midRightIrValue == 0 && rightIrValue ==0) { // no line is detected move forward.
     Serial.println("no line detected");
   }else if(midLeftIrValue && midRightIrValue) {
     Serial.println("driving forward");
+    motor.speed = maxSpeed;
     motor.driveForward();
   }
 }
@@ -116,7 +118,7 @@ int isObjectDetected (){ // met int geef je return value aan
   cm = (duration/2) / 29.1;     // Divide by 29.1 or multiply by 0.0343
   // Serial.println(cm);
   // Serial.println("cm");
-
+  // Serial.println(cm);
   delay(100);
 
   if (cm < 20){  // 20 = 20 cm in range
