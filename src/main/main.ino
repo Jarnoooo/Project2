@@ -24,8 +24,8 @@ int leftIrValue = 0;
 int isObjectDetected();
 
 unsigned long lastLine = 0;
-unsigned long interval = 3000;
-boolean turn = false;
+unsigned long interval = 1000;
+int lineLost = 0;
 
 long cm;
 
@@ -57,18 +57,12 @@ void loop() {
   midRightIrValue = digitalRead(midRightIrSensorPin);
   rightIrValue = digitalRead(rightIrSensorPin);
 
-  // Serial.print("leftIrValue: ");
-  // Serial.print(leftIrValue);
-  // Serial.println();
-  // Serial.print("midLeftIrValue: ");
-  // Serial.println(midLeftIrValue);
-  // Serial.println();
-  // Serial.print("midRightIrValue: ");
-  // Serial.println(midRightIrValue);
-  // Serial.println();
-
   // 0 -> white
   // 1 -> black
+
+  if(lineLost == 1 && (leftIrValue || midLeftIrValue || midRightIrValue || rightIrValue)) {
+    lineLost = 0;
+  }
 
   if(leftIrValue && midLeftIrValue && midRightIrValue && rightIrValue) { //t-junction
     Serial.println("t junction");
@@ -89,12 +83,16 @@ void loop() {
     motor.turnRight();
     Serial.println("left offset");
   }else if(leftIrValue == 0 && midLeftIrValue == 0 && midRightIrValue == 0 && rightIrValue ==0) { // no line is detected move forward.
-    Serial.println("no line detected");
-    turn = true;
-    if(turn == true);
-     int currentMillis = millis ();
-     checkLine(currentMillis);
+    int currentMillis = millis();
 
+    if(lineLost == 0) {
+      lastLine = millis();
+      lineLost = 1;
+    }
+
+    if(currentMillis - lastLine > interval && lineLost == 1){ //robot must rotate
+      motor.turnLeft();
+    }
   }else if(midLeftIrValue && midRightIrValue) {
     Serial.println("driving forward");
     motor.speed = maxSpeed;
@@ -106,8 +104,7 @@ void loop() {
   Measures the distance between an object and the robot using PulseIn() to determine
   the amount of time it took for the sound to bounce back from the object.
 */
-int isObjectDetected (){ // met int geef je return value aan
-
+int isObjectDetected (){
   // The sensor is triggered by a high pulse of 10 or more microseconds.
   // Give a short low pulse beforehand to ensure a clean high pulse:
 
@@ -125,29 +122,8 @@ int isObjectDetected (){ // met int geef je return value aan
   long duration = pulseIn(sonarEchoPin, HIGH);
   // Convert the time into a distance
   cm = (duration/2) / 29.1;     // Divide by 29.1 or multiply by 0.0343
-  // Serial.println(cm);
-  // Serial.println("cm");
-
   if (cm < 20){  // 20 = 20 cm in range
     return 1;
   }
-
   return 0;
-}
-
-bool checkLine (int currentTime){
-
-  if(currentTime - lastLine > interval){
-
-    motor.turnRight();
-    turn = false;
-    lastLine += interval; // saves when the timer has stopped
-    currentTime = 0;
-    Serial.println("huts a niffauw");
-    return true;
-
-
-  }else{
-    return false;
-  }
 }
