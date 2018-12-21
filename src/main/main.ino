@@ -24,7 +24,7 @@ int leftIrValue = 0;
 int isObjectDetected();
 
 unsigned long lastLine = 0;
-unsigned long interval = 1000;
+unsigned long interval = 3000;
 int lineLost = 0;
 
 long cm;
@@ -46,7 +46,7 @@ void setup() {
 }
 
 void loop() {
-  if(isObjectDetected()){
+  if(isObectDetected()){
     motor.stop();
     return;
   }
@@ -60,12 +60,14 @@ void loop() {
   // 0 -> white
   // 1 -> black
 
-  if(lineLost == 1 && (leftIrValue || midLeftIrValue || midRightIrValue || rightIrValue)) {
+  if(lineLost == 1 && (midLeftIrValue || midRightIrValue)) {
+    Serial.println("line detected again");
     lineLost = 0;
   }
 
   if(leftIrValue && midLeftIrValue && midRightIrValue && rightIrValue) { //t-junction
     Serial.println("t junction");
+    motor.turnLeft();
   }else if(leftIrValue && midLeftIrValue) { // turn left
     motor.turnLeft();
     motor.speed = 200;
@@ -74,15 +76,10 @@ void loop() {
     motor.turnRight();
     motor.speed = 200;
     Serial.println("turn right");
-  }else if(midRightIrValue == 0 && leftIrValue == 0 && rightIrValue == 0) { //right offset
-    motor.speed = 180;
-    motor.turnLeft();
-    Serial.println("right offset");
-  }else if(midLeftIrValue == 0 && leftIrValue == 0 && rightIrValue == 0) { //left offset
-    motor.speed = 180;
-    motor.turnRight();
-    Serial.println("left offset");
   }else if(leftIrValue == 0 && midLeftIrValue == 0 && midRightIrValue == 0 && rightIrValue ==0) { // no line is detected move forward.
+    Serial.println("no line detected");
+    motor.driveForward();
+
     int currentMillis = millis();
 
     if(lineLost == 0) {
@@ -93,6 +90,14 @@ void loop() {
     if(currentMillis - lastLine > interval && lineLost == 1){ //robot must rotate
       motor.turnLeft();
     }
+  }else if(midRightIrValue == 0 && leftIrValue == 0 && rightIrValue == 0) { //right offset
+    motor.speed = 180;
+    motor.turnLeft();
+    Serial.println("right offset");
+  }else if(midLeftIrValue == 0 && leftIrValue == 0 && rightIrValue == 0) { //left offset
+    motor.speed = 180;
+    motor.turnRight();
+    Serial.println("left offset");
   }else if(midLeftIrValue && midRightIrValue) {
     Serial.println("driving forward");
     motor.speed = maxSpeed;
@@ -104,7 +109,7 @@ void loop() {
   Measures the distance between an object and the robot using PulseIn() to determine
   the amount of time it took for the sound to bounce back from the object.
 */
-int isObjectDetected (){
+int isObjectDetected(){
   // The sensor is triggered by a high pulse of 10 or more microseconds.
   // Give a short low pulse beforehand to ensure a clean high pulse:
 
