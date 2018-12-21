@@ -46,10 +46,10 @@ void setup() {
 }
 
 void loop() {
-  if(isObectDetected()){
-    motor.stop();
-    return;
-  }
+  // if(isObjectDetected()){
+  //   motor.stop();
+  //   return;
+  // }
 
   //must be interfaced later
   leftIrValue = digitalRead(leftIrSensorPin);
@@ -68,14 +68,14 @@ void loop() {
   if(leftIrValue && midLeftIrValue && midRightIrValue && rightIrValue) { //t-junction
     Serial.println("t junction");
     motor.turnLeft();
-  }else if(leftIrValue && midLeftIrValue) { // turn left
+  }else if(leftIrValue && midLeftIrValue && midRightIrValue) { // turn left
+    Serial.println("turn left");
     motor.turnLeft();
     motor.speed = 200;
-    Serial.println("turn left");
-  }else if(rightIrValue && midRightIrValue) { //turn right
+  }else if(rightIrValue && midRightIrValue && midLeftIrValue) { //turn right
+    Serial.println("turn right");
     motor.turnRight();
     motor.speed = 200;
-    Serial.println("turn right");
   }else if(leftIrValue == 0 && midLeftIrValue == 0 && midRightIrValue == 0 && rightIrValue ==0) { // no line is detected move forward.
     Serial.println("no line detected");
     motor.driveForward();
@@ -90,14 +90,14 @@ void loop() {
     if(currentMillis - lastLine > interval && lineLost == 1){ //robot must rotate
       motor.turnLeft();
     }
-  }else if(midRightIrValue == 0 && leftIrValue == 0 && rightIrValue == 0) { //right offset
-    motor.speed = 180;
-    motor.turnLeft();
+  }else if(midRightIrValue == 0 && rightIrValue == 0) { //right offset
     Serial.println("right offset");
-  }else if(midLeftIrValue == 0 && leftIrValue == 0 && rightIrValue == 0) { //left offset
     motor.speed = 180;
     motor.turnRight();
+  }else if(midLeftIrValue == 0 && leftIrValue == 0) { //left offset
     Serial.println("left offset");
+    motor.speed = 180;
+    motor.turnLeft();
   }else if(midLeftIrValue && midRightIrValue) {
     Serial.println("driving forward");
     motor.speed = maxSpeed;
