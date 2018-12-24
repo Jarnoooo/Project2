@@ -14,7 +14,7 @@
 #define sonarTriggerPin 10
 #define sonarEchoPin 11
 
-#define maxSpeed 1000;
+#define maxSpeed 255;
 
 int midLeftIrValue = 0;
 int rightIrValue = 0;
@@ -24,7 +24,8 @@ int leftIrValue = 0;
 int isObjectDetected();
 
 unsigned long lastLine = 0;
-unsigned long interval = 500;
+unsigned long currentMillis = 0;
+int interval = 500;
 int lineLost = 0;
 
 long cm;
@@ -79,8 +80,7 @@ void loop() {
   }else if(leftIrValue == 0 && midLeftIrValue == 0 && midRightIrValue == 0 && rightIrValue ==0) { // no line is detected move forward.
     Serial.println("no line detected");
 
-
-    int currentMillis = millis();
+    currentMillis = millis();
 
     if(lineLost == 0) {
       lastLine = millis();
