@@ -47,10 +47,10 @@ void setup() {
 }
 
 void loop() {
-  // if(isObjectDetected()){
-  //   motor.stop();
-  //   return;
-  // }
+  if(isObjectDetected()){
+    motor.stop();
+    return;
+  }
 
   //must be interfaced later
   leftIrValue = digitalRead(leftIrSensorPin);
