@@ -63,7 +63,7 @@ void loop()
   // 0 -> white
   // 1 -> black
 
-  if(lineLost == 1 && (midLeftIrValue || midRightIrValue)) {  // check if line is detected to determine 
+  if(lineLost == 1 && (midLeftIrValue || midRightIrValue)) {  // check if line is detected again to stop turning
     Serial.println("line detected again");
     lineLost = 0;
   }
@@ -128,7 +128,11 @@ int isObjectDetected()
   */
   long duration = pulseIn(sonarEchoPin, HIGH);
   // Convert the time into a distance
-  cm = (duration/2) / 0.0343;     // Duration is in miliseconds, multiply by 0.0343 to get to centimeters
+  cm = (duration/2) / 0.0343;    
+  /* Duration is in miliseconds, multiply by 0.0343 to get to centimeters
+  *  0.0343 because speed of sound  = 343 m/s and we want to calculate the distance in centimeters
+  *  dividing by 2 because the sound needs to bounce of an object. It has traveltime back to the sensor
+  */
   Serial.println(cm);
   if (cm < 20){  
     return 1; // return 1 to first if function, to stop the robot
