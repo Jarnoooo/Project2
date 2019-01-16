@@ -14,7 +14,7 @@
 #define sonarTriggerPin 10
 #define sonarEchoPin 11
 
-#define maxSpeed 255;
+#define maxSpeed 255
 
 int midLeftIrValue = 0;
 int rightIrValue = 0;
@@ -32,10 +32,11 @@ long cm;
 
 Motor motor(leftMotorForwardPin, leftMotorReversePin, rightMotorForwardPin, rightMotorReversePin);
 
-void setup() {
+void setup() 
+{
   Serial.begin(9600);
 
-  motor.speed = maxSpeed;
+  motor.speed = maxSpeed; //set motor speed
 
   pinMode(leftIrSensorPin, INPUT);
   pinMode(midLeftIrSensorPin, INPUT);
@@ -46,8 +47,9 @@ void setup() {
   pinMode(sonarEchoPin, INPUT);
 }
 
-void loop() {
-  if(isObjectDetected()){
+void loop()
+{
+  if(isObjectDetected()){ // when 1 is returned from function, stop the robot.
     motor.stop();
     return;
   }
@@ -61,7 +63,7 @@ void loop() {
   // 0 -> white
   // 1 -> black
 
-  if(lineLost == 1 && (midLeftIrValue || midRightIrValue)) {
+  if(lineLost == 1 && (midLeftIrValue || midRightIrValue)) {  // check if line is detected to determine 
     Serial.println("line detected again");
     lineLost = 0;
   }
@@ -71,7 +73,7 @@ void loop() {
     motor.driveForward();
   }else if(leftIrValue && midLeftIrValue && midRightIrValue) { // turn left
     Serial.println("turn left");
-    motor.speed = maxSpeed;
+    motor.speed = maxSpeed; // max speed because one motor doesn't have enough torque to move the robot through the bend
     motor.turnLeft();
   }else if(rightIrValue && midRightIrValue && midLeftIrValue) { //turn right
     Serial.println("turn right");
@@ -80,18 +82,18 @@ void loop() {
   }else if(leftIrValue == 0 && midLeftIrValue == 0 && midRightIrValue == 0 && rightIrValue ==0) { // no line is detected move forward.
     Serial.println("no line detected");
 
-    currentMillis = millis();
+    currentMillis = millis(); // initialise timer
 
-    if(lineLost == 0) {
+    if(lineLost == 0) { // when line is lost, start timer 
       lastLine = millis();
       lineLost = 1;
     }
 
-    if(currentMillis - lastLine > interval && lineLost == 1){ //robot must rotate
+    if(currentMillis - lastLine > interval && lineLost == 1){ //robot must rotate when the line is still and longer lost then interval
       Serial.println("no line detected -> rotation car");
       motor.turnRight();
     } else {
-      motor.driveForward();
+      motor.driveForward(); // just drive forward
     }
   }else if(midRightIrValue == 0 && rightIrValue == 0) { //right offset
     Serial.println("right offset");
@@ -101,38 +103,35 @@ void loop() {
     Serial.println("left offset");
     motor.speed = 230;
     motor.turnRight();
-  }else if(midLeftIrValue && midRightIrValue) {
+  }else if(midLeftIrValue && midRightIrValue) { // forward
     Serial.println("driving forward");
     motor.speed = maxSpeed;
     motor.driveForward();
   }
 }
 
-/*
+int isObjectDetected()
+{   
+  digitalWrite(sonarTriggerPin, LOW);
+  delayMicroseconds(5); // sensor gives low pulse to clean any high pulse for 5 microseconds
+  digitalWrite(sonarTriggerPin, HIGH);
+  delayMicroseconds(10); // sensor gives high pulse for 10 microseconds
+  digitalWrite(sonarTriggerPin, LOW);
+  /* 
+  Read the signal from the sensor: a high pulse whose duration is the time (in microseconds) from the sending
+  of the ping to the reception of its echo off of an object.
+  */
+  pinMode(sonarEchoPin, INPUT); 
+  /*
   Measures the distance between an object and the robot using PulseIn() to determine
   the amount of time it took for the sound to bounce back from the object.
-*/
-int isObjectDetected(){
-  // The sensor is triggered by a high pulse of 10 or more microseconds.
-  // Give a short low pulse beforehand to ensure a clean high pulse:
-
-  digitalWrite(sonarTriggerPin, LOW);
-  delayMicroseconds(5);
-  digitalWrite(sonarTriggerPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(sonarTriggerPin, LOW);
-
-  // Read the signal from the sensor: a high pulse whose
-  // duration is the time (in microseconds) from the sending
-  // of the ping to the reception of its echo off of an object.
-
-  pinMode(sonarEchoPin, INPUT);
+  */
   long duration = pulseIn(sonarEchoPin, HIGH);
   // Convert the time into a distance
-  cm = (duration/2) / 29.1;     // Divide by 29.1 or multiply by 0.0343
+  cm = (duration/2) / 0.0343;     // Duration is in miliseconds, multiply by 0.0343 to get to centimeters
   Serial.println(cm);
-  if (cm < 20){  // 20 = 20 cm in range
-    return 1;
+  if (cm < 20){  
+    return 1; // return 1 to first if function, to stop the robot
   }
-  return 0;
+  return 0; // return 0 to first if function, that robot can drive on
 }
